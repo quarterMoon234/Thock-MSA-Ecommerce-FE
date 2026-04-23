@@ -33,9 +33,9 @@ const HomePage = () => {
             return enriched;
         };
 
-        const fetchCategoryProducts = async (category, setter) => {
+        const fetchCategoryProducts = async (category, setter, size = 4) => {
             try {
-                const response = await productApi.getProducts(category, 0, 4);
+                const response = await productApi.getProducts(category, 0, size);
                 const enriched = await enrichWithSalePrice(response.content || []);
                 if (isMounted) setter(enriched);
             } catch (error) {
@@ -44,7 +44,7 @@ const HomePage = () => {
             }
         };
 
-        fetchCategoryProducts('KEYBOARD', setFeatured);
+        fetchCategoryProducts('KEYBOARD', setFeatured, 5);
         fetchCategoryProducts('SWITCH', setSwitches);
         return () => {
             isMounted = false;
@@ -76,13 +76,6 @@ const HomePage = () => {
         if (searchTerm.trim()) {
             navigate(`/products?keyword=${encodeURIComponent(searchTerm)}`);
         }
-    };
-
-    const getSellerDisplayName = (product) => {
-        const rawName = product?.sellerName || product?.memberName || product?.username || product?.nickname;
-        if (!rawName) return '판매자';
-        if (/^판매자\s*\d+$/i.test(rawName) || /^user\s*#?\s*\d+$/i.test(rawName)) return '판매자';
-        return rawName;
     };
 
     const ProductCard = ({ product, compact = false }) => {
@@ -129,7 +122,7 @@ const HomePage = () => {
                     <div style={{ fontSize: compact ? '0.75rem' : '0.8rem', color: 'var(--text-muted)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{product.category}</div>
                     <div style={{ marginBottom: compact ? '6px' : '8px' }}>
                         <h3 style={{ fontSize: compact ? '0.92rem' : '1rem', fontWeight: 600, lineHeight: '1.4', color: 'var(--text-primary)', margin: 0, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                            {product.name} - {getSellerDisplayName(product)}
+                            {product.name}
                         </h3>
                     </div>
 
